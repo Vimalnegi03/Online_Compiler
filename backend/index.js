@@ -14,7 +14,7 @@ app.get("/",(req,res)=>{
 })
 
 app.post("/run",async(req,res)=>{
-    const {language="cpp",code}=req.body;
+    const {language="cpp",code,input}=req.body;
     if(code===undefined)
     {
         res.status(400).json({
@@ -26,7 +26,7 @@ app.post("/run",async(req,res)=>{
         
         const filePath=await generateFile(language,code)
         console.log(filePath);
-        const output=await executeCpp(filePath)
+        const output=await executeCpp(filePath,input)
         console.log(output);
         return res.json({filePath,output})
     } catch (error) {

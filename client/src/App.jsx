@@ -1,37 +1,34 @@
-import { useState } from 'react'
-import axios from 'axios'
-import toast, { Toaster } from 'react-hot-toast'
-import './App.css'
+import { useState } from 'react';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+import './App.css';
 
 function App() {
-  const [code, setCode] = useState("")
-  const [output, setOutput] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [languages,setLanguages]=useState("cpp")
+  const [code, setCode] = useState("");
+  const [input, setInput] = useState(""); // Added state for user input
+  const [output, setOutput] = useState("");
+  const [loading, setLoading] = useState(false); // Set initial loading state to false
+
   const handleSubmit = async (e) => {
-    e.preventDefault()
-
-    if (loading) {
-      toast.loading("Please wait...")
-      return
-    }
-
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
+    toast.loading("Compiling and executing..."); // Show loading toast
     const payload = {
       language: "cpp",
-      code
-    }
+      code,
+      input // Include input in the payload
+    };
     try {
-      const { data } = await axios.post("http://localhost:5000/run", payload)
-      setOutput(data.output)
-      toast.success("Code executed successfully!")
+      const { data } = await axios.post("http://localhost:5000/run", payload);
+      setOutput(data.output);
+      toast.success("Execution completed successfully!"); // Show success toast
     } catch (error) {
-      toast.error("Error executing code.")
-      console.error(error.response)
+      console.error(error.response);
+      toast.error("An error occurred during execution."); // Show error toast
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
@@ -44,10 +41,16 @@ function App() {
             onChange={(e) => setCode(e.target.value)}
             placeholder="Write your code here..."
           ></textarea>
+          <textarea
+            className="w-full h-24 p-2 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Enter input for your code..."
+          ></textarea>
           <button
             type="submit"
             className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition duration-200"
-            disabled={loading}
+            disabled={loading} // Disable button when loading
           >
             {loading ? "Submitting..." : "Submit"}
           </button>
@@ -59,9 +62,8 @@ function App() {
           </div>
         )}
       </div>
-      <Toaster />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
